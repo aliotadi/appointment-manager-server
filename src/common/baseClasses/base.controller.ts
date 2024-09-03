@@ -19,7 +19,7 @@ import { IBaseController } from './base.controller.interface';
 import { AbstractValidationPipe } from '../pipes';
 import { BaseService } from './base.service';
 import { ApiPaginationQuery, FormattedApiResponse, Roles } from '../decorators';
-import { USER_ROLE } from '../types/user-roles.enum';
+import { USER_ROLE } from '../types';
 import { RolesGuard } from '../guards';
 
 export function ControllerFactory<
@@ -66,7 +66,7 @@ export function ControllerFactory<
 
     @Post()
     @Roles(USER_ROLE.ADMIN)
-    @UseGuards(AuthGuard(JWT_STRATEGIES.JWT), RolesGuard, )
+    @UseGuards(AuthGuard(JWT_STRATEGIES.JWT), RolesGuard)
     @ApiBody({ type: createRequestDto })
     @ApiBearerAuth('access-token')
     @FormattedApiResponse(idResponseDto, true)
@@ -91,7 +91,6 @@ export function ControllerFactory<
 
     @Delete('/:id')
     @Roles(USER_ROLE.ADMIN)
-    
     @UseGuards(AuthGuard(JWT_STRATEGIES.JWT), RolesGuard)
     @ApiParam({ name: 'id', example: 1 })
     @ApiBearerAuth('access-token')
@@ -102,7 +101,6 @@ export function ControllerFactory<
 
     @Patch('/:id')
     @Roles(USER_ROLE.ADMIN)
-    
     @UseGuards(AuthGuard(JWT_STRATEGIES.JWT), RolesGuard)
     @ApiParam({ name: 'id', example: 1 })
     @ApiBody({ type: updateRequestDto })
@@ -121,7 +119,6 @@ export function ControllerFactory<
     }
 
     @Roles(USER_ROLE.ADMIN)
-    
     @UseGuards(AuthGuard(JWT_STRATEGIES.JWT), RolesGuard)
     @ApiBearerAuth('access-token')
     @ApiPaginationQuery([

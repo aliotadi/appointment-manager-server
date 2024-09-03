@@ -12,7 +12,6 @@ export const FormattedApiResponse = (
       schema: {
         properties: {
           meta: { $ref: getSchemaPath(Meta) },
-          // data: { $ref: getSchemaPath(model) },
           ...(model ? { data: { $ref: getSchemaPath(model) } } : {}),
         },
       },

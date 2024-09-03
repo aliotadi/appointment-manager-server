@@ -17,6 +17,9 @@ export class UserEntity extends BaseEntity {
   @Column({ default: false })
   phoneNumberVerified: boolean;
 
+  @Column({ nullable: true })
+  password: string;
+
   @Column({ default: false })
   isAdmin: boolean;
 }

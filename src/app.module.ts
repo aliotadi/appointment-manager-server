@@ -10,11 +10,18 @@ import { MorganInterceptor, MorganModule } from 'nest-morgan';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { typeOrmConfig } from './configs';
-import { UserModule } from './modules';
+import { redisOptions, typeOrmConfig } from './configs';
+import { AuthModule, UserModule } from './modules';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig), MorganModule, UserModule],
+  imports: [
+    TypeOrmModule.forRoot(typeOrmConfig),
+    RedisModule.forRoot(redisOptions),
+    MorganModule,
+    UserModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

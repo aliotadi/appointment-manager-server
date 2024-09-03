@@ -3,7 +3,7 @@ import { BaseService } from '../../common/baseClasses';
 import { UserEntity } from '../../db/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserResponseDto } from './types';
+import { GetUserResponseDto } from './types';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -14,7 +14,7 @@ export class UserService extends BaseService<UserEntity> {
     super(userRepository);
   }
 
-  async getUser(userId: number): Promise<UserResponseDto> {
+  async getUser(userId: number): Promise<GetUserResponseDto> {
     const hellow = await this.findOne({ where: { id: userId } });
     console.log(hellow);
     return {
