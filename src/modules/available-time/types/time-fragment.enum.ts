@@ -1,0 +1,4 @@
+export enum TIME_FRAGMENT {
+  TWENTY_M = 'TWENTY_M',
+  ONE_AND_HALF_H = 'ONE_AND_HALF_H'
+}

@@ -1,3 +1,4 @@
 export enum TABLE_NAMES {
-    USERS = 'users',
+  USERS = 'users',
+  AVAILABLE_TIMES = 'available-times',
 }
