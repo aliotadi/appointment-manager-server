@@ -5,10 +5,10 @@ import { TABLE_NAMES } from '../../common/types';
 
 @Entity({ name: TABLE_NAMES.USERS, orderBy: { id: 'DESC' } })
 export class UserEntity extends BaseEntity {
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   lastName: string;
 
   @Column({ nullable: false, unique: true })

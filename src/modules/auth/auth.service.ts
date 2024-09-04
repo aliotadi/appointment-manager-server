@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from '@liaoliaots/nestjs-redis';
-import { DataSource } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 import Redis from 'ioredis';
 import * as bcrypt from 'bcrypt';
@@ -41,9 +40,7 @@ export class AuthService {
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
     private redisService: RedisService,
-    // private smsService: SmsService,
     private jwtService: JwtService,
-    private readonly dataSource: DataSource,
   ) {
     this.redisClient = this.redisService.getClient();
   }
@@ -118,11 +115,7 @@ export class AuthService {
     };
   }
 
-  async isValidOtp(
-    phoneNumber: string,
-    otp: string,
-    isAgent: boolean = false,
-  ): Promise<boolean> {
+  async isValidOtp(phoneNumber: string, otp: string): Promise<boolean> {
     let isValid = false;
     if (
       this.isProductionEnv ||
@@ -130,9 +123,8 @@ export class AuthService {
     ) {
       //  TODO: should actually verify the otp code :))
     } else {
-      const secret = process.env.GAUTH_SECRET;
       isValid = speakeasy.totp.verify({
-        secret,
+        secret: process.env.GAUTH_SECRET,
         encoding: 'base32',
         token: otp,
       });
@@ -149,18 +141,18 @@ export class AuthService {
   async verifyOtp(
     phoneNumber: string,
     otp: string,
-    lang?: 'EN' | 'AR',
   ): Promise<VerifyOTPResponseDto> {
     const isValid = await this.isValidOtp(phoneNumber, otp);
     if (isValid) {
+      let isNew = false;
       const userId = await this.userService.insertOrIgnore({
-        phoneNumber: phoneNumber,
+        phoneNumber,
         phoneNumberVerified: true,
       });
 
-      const existingUser = await this.userService.findOne({
-        where: { phoneNumber },
-      });
+      if (userId) {
+        isNew = true;
+      }
 
       const user = await this.userService.findOne({
         where: { phoneNumber: phoneNumber },
@@ -181,6 +173,7 @@ export class AuthService {
       return plainToInstance(VerifyOTPResponseDto, {
         ...loginInfo,
         user,
+        isNew,
       });
     } else {
       throw new HttpException('wrong code', 403);

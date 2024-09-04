@@ -19,13 +19,4 @@ export class JwtStrategy extends BaseStrategyFactory(JWT_STRATEGIES.JWT, {
   ) {
     super(jwtService, userService);
   }
-
-  // async validate(payload: JwtPayload) {
-  //   console.log(payload);
-  //   const user = await this.userService.findOne({
-  //     where: { id: payload.id },
-  //     relations: ['agent'],
-  //   });
-  //   return { ...user, role: payload.role };
-  // }
 }

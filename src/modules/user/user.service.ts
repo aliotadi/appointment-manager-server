@@ -4,6 +4,7 @@ import { UserEntity } from '../../db/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GetUserResponseDto } from './types';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity> {
@@ -15,15 +16,7 @@ export class UserService extends BaseService<UserEntity> {
   }
 
   async getUser(userId: number): Promise<GetUserResponseDto> {
-    const hellow = await this.findOne({ where: { id: userId } });
-    console.log(hellow);
-    return {
-      id: 1,
-      firstName: 'ali',
-      lastName: 'otadi',
-      createdAt: new Date(),
-      isActive: true,
-      phoneNumber: '09109616770',
-    };
+    const user = await this.findOne({ where: { id: userId } });
+    return plainToInstance(GetUserResponseDto, user);
   }
 }

@@ -33,7 +33,6 @@ export const BaseStrategyFactory = (
       if (payload) {
         const user = await this.userService.findOne({
           where: { id: payload.id },
-          relations: ['agent'],
         });
 
         if (user) (this as any).success({ ...user, role: payload.role });

@@ -23,8 +23,4 @@ export class JwtRefreshStrategy extends BaseStrategyFactory(
   ) {
     super(jwtService, userService);
   }
-
-  // validate(req: Request, payload: JwtPayload) {
-  //   return { payload };
-  // }
 }
