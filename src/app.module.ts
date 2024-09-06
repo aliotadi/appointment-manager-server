@@ -11,7 +11,13 @@ import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { redisOptions, typeOrmConfig } from './configs';
-import { AuthModule, AvailableTimeModule, UserModule } from './modules';
+import {
+  AuthModule,
+  AvailableTimeModule,
+  TimeFragmentModule,
+  UserModule,
+} from './modules';
+import { ResponseFormatterInterceptor } from './common/interceptors/response-formatter';
 
 @Module({
   imports: [
@@ -21,10 +27,12 @@ import { AuthModule, AvailableTimeModule, UserModule } from './modules';
     UserModule,
     AuthModule,
     AvailableTimeModule,
+    TimeFragmentModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    { provide: APP_INTERCEPTOR, useClass: ResponseFormatterInterceptor },
     {
       provide: APP_INTERCEPTOR,
       useClass: MorganInterceptor('dev'),

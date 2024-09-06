@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, IsPhoneNumber } from 'class-validator';
 import { IsString } from 'class-validator';
 import { Exclude, Expose, Type } from 'class-transformer';
-import { GetUserResponseDto } from '../user/types';
+import { GetUserResponseDto } from '../../user/types';
 
 @Exclude()
 export class VerifyOTPRequestDto {

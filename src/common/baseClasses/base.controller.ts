@@ -2,6 +2,8 @@ import {
   Body,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -14,7 +16,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiParam } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { BaseEntity } from '../../db/models/base.entity';
-import { BasePermissions, JWT_STRATEGIES, PaginationParams } from '../types';
+import { JWT_STRATEGIES, PaginationParams } from '../types';
 import { IBaseController } from './base.controller.interface';
 import { AbstractValidationPipe } from '../pipes';
 import { BaseService } from './base.service';
@@ -34,7 +36,6 @@ export function ControllerFactory<
   updateRequestDto: Type<UpdateRequestDto>,
   findResponseDto: Type<FindResponseDto>,
   idResponseDto: Type<IdResponseDto>,
-  permissions?: BasePermissions,
 ): Type<
   IBaseController<
     T,
@@ -72,7 +73,7 @@ export function ControllerFactory<
     @FormattedApiResponse(idResponseDto, true)
     @UsePipes(createPipe)
     async create(@Body() entity: CreateRequestDto): Promise<IdResponseDto> {
-      const response = await this.baseService.create(entity as unknown as T);
+      const response = await this.baseService.insert(entity as unknown as T);
       return plainToInstance(idResponseDto, response.identifiers[0]);
     }
 
@@ -86,6 +87,7 @@ export function ControllerFactory<
       const response = await this.baseService.findOne({
         where: { id: id as any },
       });
+      if (!response) throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
       return plainToInstance(findResponseDto, response);
     }
 

@@ -1,9 +1,9 @@
-import { Exclude, Expose } from 'class-transformer';
-import { TIME_FRAGMENT } from './time-fragment.enum';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { FindTimeFragmentResponseDto } from '../../time-fragment/types';
 
 @Exclude()
-export class GetAvailableTimesResponseDto {
+class AvailableTimesResponseDto {
   @Expose()
   @ApiProperty()
   id: number;
@@ -14,17 +14,26 @@ export class GetAvailableTimesResponseDto {
 
   @Expose()
   @ApiProperty()
-  start: Date;
+  date: Date;
 
   @Expose()
   @ApiProperty()
-  finish: Date;
-
-  @Expose()
-  @ApiProperty({ enum: TIME_FRAGMENT })
-  allowedFragment: TIME_FRAGMENT;
+  start: string;
 
   @Expose()
   @ApiProperty()
-  restTime: number;
+  finish: string;
+
+  @Expose()
+  @ApiProperty({ type: () => FindTimeFragmentResponseDto })
+  @Type(() => FindTimeFragmentResponseDto)
+  timeFragment: FindTimeFragmentResponseDto;
+}
+
+@Exclude()
+export class GetAvailableTimesResponseDto {
+  @Expose()
+  @ApiProperty({ type: () => AvailableTimesResponseDto, isArray: true })
+  @Type(() => AvailableTimesResponseDto)
+  items: AvailableTimesResponseDto[];
 }

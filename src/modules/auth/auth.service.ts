@@ -19,7 +19,7 @@ import {
   LoginResponseDto,
   SendOTPResponseDto,
   VerifyOTPResponseDto,
-} from '../types';
+} from './types';
 import { UserEntity } from '../../db/models';
 import { jwtConfig } from '../../configs';
 

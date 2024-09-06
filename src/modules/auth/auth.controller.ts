@@ -17,7 +17,7 @@ import {
   SendOTPResponseDto,
   VerifyOTPRequestDto,
   VerifyOTPResponseDto,
-} from '../types';
+} from './types';
 import { AuthGuard } from '@nestjs/passport';
 import { JWT_STRATEGIES, JwtPayload } from '../../common/types';
 import { AuthService } from './auth.service';

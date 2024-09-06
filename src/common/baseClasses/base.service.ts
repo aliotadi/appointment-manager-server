@@ -7,6 +7,7 @@ import {
   FindOptionsWhere,
   InsertResult,
   Repository,
+  UpdateResult,
 } from 'typeorm';
 import { UpsertOptions } from 'typeorm/repository/UpsertOptions';
 
@@ -16,7 +17,7 @@ export class BaseService<T> {
     this.entityName = this.repository.metadata.tableName;
   }
 
-  async create(
+  async insert(
     input: DeepPartial<T> | DeepPartial<T>[],
     manager?: EntityManager,
   ): Promise<InsertResult> {
@@ -37,7 +38,7 @@ export class BaseService<T> {
     input: DeepPartial<T> | DeepPartial<T>[],
   ): Promise<number> {
     try {
-      const result = await this.create(input);
+      const result = await this.insert(input);
       return result.identifiers[0].id;
     } catch (e) {
       return undefined;
@@ -87,8 +88,8 @@ export class BaseService<T> {
   async delete(
     conditions: FindOptionsWhere<T> | number,
     manager?: EntityManager,
-  ): Promise<void> {
-    manager
+  ): Promise<UpdateResult> {
+    return manager
       ? await manager.softDelete(this.entityName, conditions)
       : await this.repository.softDelete(conditions);
   }

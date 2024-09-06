@@ -65,6 +65,7 @@ export class ResponseFormatterInterceptor implements NestInterceptor {
           validationErrors,
           literalError: err,
         },
+        data: err.cause,
       };
     };
   }
