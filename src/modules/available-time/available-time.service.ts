@@ -2,10 +2,12 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { BaseService } from '../../common/baseClasses';
 import { AvailableTimeEntity } from '../../db/models';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DeepPartial, Repository } from 'typeorm';
+import { Between, Brackets, DeepPartial, Repository } from 'typeorm';
 import {
+  AvailableSessionResponseDto,
   ConflictingDatesResponseDto,
   CreateAvailableTimeRequestDto,
+  GetAvailableSessionsResponseDto,
   GetAvailableTimesResponseDto,
   UpdateAvailableTimeRequestDto,
 } from './types';
@@ -35,8 +37,8 @@ export class AvailableTimeService extends BaseService<AvailableTimeEntity> {
 
   async getConflictingDates(
     dates: Date[],
-    start: string,
-    finish: string,
+    start: number,
+    finish: number,
   ): Promise<{ id: number; date: Date }[]> {
     const conflictingTimes = await this.availableTimeRepository
       .createQueryBuilder('availableTime')
@@ -156,5 +158,63 @@ export class AvailableTimeService extends BaseService<AvailableTimeEntity> {
       throw new HttpException('Not Found', HttpStatus.BAD_REQUEST);
 
     await this.delete(id);
+  }
+
+  async getAvailableSessions(
+    date: Date,
+  ): Promise<GetAvailableSessionsResponseDto> {
+    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+
+    const availableTimes = await this.findMany({
+      where: { date: Between(startOfDay, endOfDay) },
+      relations: ['timeFragment'],
+    });
+
+    const sessions: AvailableSessionResponseDto[] = availableTimes
+      .map((availableTime): AvailableSessionResponseDto[] => {
+        const { timeFragment, start, finish } = availableTime;
+
+        // Calculate sessions based on TimeFragment settings
+        const sessions = this.calculateSessions(
+          start,
+          finish,
+          timeFragment.length,
+          timeFragment.rest,
+        );
+
+        return sessions.map((session) => ({
+          date: availableTime.date,
+          start: session.start,
+          finish: session.finish,
+          price: timeFragment.price,
+        }));
+      })
+      .reduce((prev, curr) => {
+        return [...prev, ...curr];
+      }, []);
+
+    return { sessions };
+  }
+
+  private calculateSessions(
+    start: number,
+    finish: number,
+    length: number,
+    rest: number,
+  ): { start: number; finish: number }[] {
+    const sessions: { start: number; finish: number }[] = [];
+    let currentStart = start;
+
+    while (currentStart + length <= finish) {
+      sessions.push({
+        start: currentStart,
+        finish: currentStart + length,
+      });
+
+      currentStart += length + rest;
+    }
+
+    return sessions;
   }
 }

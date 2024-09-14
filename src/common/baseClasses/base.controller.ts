@@ -133,7 +133,7 @@ export function ControllerFactory<
     async findAll(
       @Query() query: PaginationParams,
     ): Promise<{ items: FindResponseDto[]; count: number }> {
-      const result = await this.baseService.paginate({
+      const result = await this.baseService.findAndCount({
         skip: query.skip,
         take: query.take,
         order: query.order ? JSON.parse(query.order) : undefined,

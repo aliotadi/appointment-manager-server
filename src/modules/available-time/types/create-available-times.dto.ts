@@ -6,19 +6,19 @@ import { IsTime } from '../../../common/decorators';
 @Exclude()
 export class CreateAvailableTimeRequestDto {
   @Expose()
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ isArray: true, type: [Date], example: ['2024-9-7'] })
   @IsDateString({}, { each: true })
   dates: Date[];
 
   @Expose()
   @ApiProperty()
   @IsTime()
-  start: string;
+  start: number;
 
   @Expose()
   @ApiProperty()
   @IsTime()
-  finish: string;
+  finish: number;
 
   @Expose()
   @ApiProperty()

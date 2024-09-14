@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { FindTimeFragmentResponseDto } from '../../time-fragment/types';
 
 @Exclude()
-class AvailableTimesResponseDto {
+export class AvailableTimesResponseDto {
   @Expose()
   @ApiProperty()
   id: number;

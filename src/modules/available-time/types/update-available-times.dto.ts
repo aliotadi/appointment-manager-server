@@ -7,15 +7,15 @@ import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 export class UpdateAvailableTimeRequestDto {
   @Expose()
   @ApiProperty()
-  @IsTime()
+  @IsNumber()
   @IsOptional()
-  start?: string;
+  start?: number;
 
   @Expose()
   @ApiProperty()
-  @IsTime()
+  @IsNumber()
   @IsOptional()
-  finish?: string;
+  finish?: number;
 
   @Expose()
   @ApiProperty()

@@ -24,7 +24,7 @@ import {
 import { AvailableTimeService } from '../available-time.service';
 
 @Controller('/admin/available-times')
-@ApiTags('admin/available-times')
+@ApiTags('/admin/available-times')
 export class AvailableTimeAdminController {
   constructor(private readonly availableTimeService: AvailableTimeService) {}
 

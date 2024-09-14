@@ -8,5 +8,6 @@ import { AvailableTimeService } from './available-time.service';
   imports: [TypeOrmModule.forFeature([AvailableTimeEntity])],
   controllers: [AvailableTimeAdminController],
   providers: [AvailableTimeService],
+  exports: [AvailableTimeService],
 })
 export class AvailableTimeModule {}

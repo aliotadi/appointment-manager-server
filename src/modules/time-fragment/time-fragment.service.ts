@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from '../../common/baseClasses';
-import { TimeFragmentEntity } from '../../db/models/time-fragment.entity';
+import { TimeFragmentEntity } from '../../db/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 

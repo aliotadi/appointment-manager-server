@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TimeFragmentEntity } from '../../db/models/time-fragment.entity';
+import { TimeFragmentEntity } from '../../db/models';
 import { TimeFragmentAdminController } from './controllers';
 import { TimeFragmentService } from './time-fragment.service';
 

@@ -76,7 +76,7 @@ export class BaseService<T> {
     }
   }
 
-  async save(
+  async insertOrUpdate(
     input: DeepPartial<T> | DeepPartial<T>[],
     manager?: EntityManager,
   ): Promise<T> {
@@ -121,7 +121,7 @@ export class BaseService<T> {
       : await this.repository.find(options);
   }
 
-  async paginate(options: FindManyOptions<T>): Promise<[T[], number]> {
+  async findAndCount(options: FindManyOptions<T>): Promise<[T[], number]> {
     return await this.repository.findAndCount(options);
   }
 

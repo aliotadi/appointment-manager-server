@@ -23,7 +23,7 @@ import { JWT_STRATEGIES, JwtPayload } from '../../common/types';
 import { AuthService } from './auth.service';
 
 @Controller('/auth')
-@ApiTags('auth')
+@ApiTags('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

@@ -9,7 +9,7 @@ import { GetUserResponseDto } from '../types';
 import { UserEntity } from '../../../db/models';
 
 @Controller('/user')
-@ApiTags('user')
+@ApiTags('/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

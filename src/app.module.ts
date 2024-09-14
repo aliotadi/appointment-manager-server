@@ -14,6 +14,8 @@ import { redisOptions, typeOrmConfig } from './configs';
 import {
   AuthModule,
   AvailableTimeModule,
+  OrderModule,
+  PaymentModule,
   TimeFragmentModule,
   UserModule,
 } from './modules';
@@ -28,6 +30,8 @@ import { ResponseFormatterInterceptor } from './common/interceptors/response-for
     AuthModule,
     AvailableTimeModule,
     TimeFragmentModule,
+    OrderModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [

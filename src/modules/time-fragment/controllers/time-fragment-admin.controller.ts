@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TimeFragmentService } from '../time-fragment.service';
 import { ControllerFactory } from '../../../common/baseClasses';
-import { TimeFragmentEntity } from '../../../db/models/time-fragment.entity';
+import { TimeFragmentEntity } from '../../../db/models';
 import {
   CreateTimeFragmentRequestDto,
   FindTimeFragmentResponseDto,
@@ -11,7 +11,7 @@ import {
 import { IdResponseDto } from '../../../common/types';
 
 @Controller('/admin/time-fragments')
-@ApiTags('admin/time-fragments')
+@ApiTags('/admin/time-fragments')
 export class TimeFragmentAdminController extends ControllerFactory<
   TimeFragmentEntity,
   CreateTimeFragmentRequestDto,
