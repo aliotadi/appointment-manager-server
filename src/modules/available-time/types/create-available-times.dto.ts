@@ -12,12 +12,10 @@ export class CreateAvailableTimeRequestDto {
 
   @Expose()
   @ApiProperty()
-  @IsTime()
   start: number;
 
   @Expose()
   @ApiProperty()
-  @IsTime()
   finish: number;
 
   @Expose()

@@ -1,16 +1,11 @@
-import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { FindTimeFragmentResponseDto } from '../../time-fragment/types';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 @Exclude()
-export class AvailableTimesResponseDto {
+export class AvailableTimeResponseDto {
   @Expose()
   @ApiProperty()
   id: number;
-
-  @Expose()
-  @ApiProperty()
-  isActive: boolean;
 
   @Expose()
   @ApiProperty()
@@ -18,22 +13,29 @@ export class AvailableTimesResponseDto {
 
   @Expose()
   @ApiProperty()
-  start: string;
+  price: number;
 
   @Expose()
   @ApiProperty()
-  finish: string;
+  additionalPricePerPersonPercentage: number;
 
   @Expose()
-  @ApiProperty({ type: () => FindTimeFragmentResponseDto })
-  @Type(() => FindTimeFragmentResponseDto)
-  timeFragment: FindTimeFragmentResponseDto;
+  @ApiProperty()
+  start: number;
+
+  @Expose()
+  @ApiProperty()
+  finish: number;
+
+  @Expose()
+  @ApiProperty()
+  isAvailable: boolean;
 }
 
 @Exclude()
 export class GetAvailableTimesResponseDto {
   @Expose()
-  @ApiProperty({ type: () => AvailableTimesResponseDto, isArray: true })
-  @Type(() => AvailableTimesResponseDto)
-  items: AvailableTimesResponseDto[];
+  @ApiProperty({ type: () => [AvailableTimeResponseDto], isArray: true })
+  @Type(() => AvailableTimeResponseDto)
+  items: AvailableTimeResponseDto[];
 }

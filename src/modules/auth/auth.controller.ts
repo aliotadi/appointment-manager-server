@@ -66,7 +66,7 @@ export class AuthController {
       id: req.user.id,
       role: req.user.role,
     };
-    const { access_token, refresh_token } = this.authService.getTokens(payload);
-    return { access_token, refresh_token };
+    const { accessToken, refreshToken } = this.authService.getTokens(payload);
+    return { accessToken, refreshToken };
   }
 }

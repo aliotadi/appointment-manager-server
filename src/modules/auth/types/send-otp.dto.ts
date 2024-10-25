@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsPhoneNumber } from 'class-validator';
-import { IsBoolean, IsString } from 'class-validator';
 
 export class SendOTPRequestDto {
-  @IsPhoneNumber()
+  @IsPhoneNumber('IR')
   @ApiProperty({
-    example: '+989109616770',
+    example: '09109616770',
   })
   phoneNumber: string;
 }

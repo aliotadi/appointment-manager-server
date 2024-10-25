@@ -10,12 +10,6 @@ import { UserEntity } from './user.entity';
 @Entity({ name: TABLE_NAMES.ORDERS, orderBy: { id: 'DESC' } })
 export class OrderEntity extends BaseEntity {
   @Column({ nullable: false })
-  start: number;
-
-  @Column({ nullable: false })
-  finish: number;
-
-  @Column({ nullable: false })
   basePrice: number;
 
   @Column({ nullable: false })
@@ -24,7 +18,7 @@ export class OrderEntity extends BaseEntity {
   @Column({ nullable: false })
   totalPrice: number;
 
-  @ManyToOne(() => AvailableTimeEntity, (availableTime) => availableTime.orders)
+  @ManyToOne(() => AvailableTimeEntity, (availableTime) => availableTime.order)
   @JoinColumn()
   availableTime: AvailableTimeEntity;
 

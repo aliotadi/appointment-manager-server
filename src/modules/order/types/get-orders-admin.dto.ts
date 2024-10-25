@@ -1,6 +1,6 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { AvailableTimesResponseDto } from '../../available-time/types';
+import { AvailableTimesAdminResponseDto } from '../../available-time/types';
 import { ORDER_STATUS } from './order-status.enum';
 
 @Exclude()
@@ -38,9 +38,9 @@ class OrderAdminResponseDto {
   status: ORDER_STATUS;
 
   @Expose()
-  @ApiProperty({ type: () => AvailableTimesResponseDto })
-  @Type(() => AvailableTimesResponseDto)
-  availableTime: AvailableTimesResponseDto;
+  @ApiProperty({ type: () => AvailableTimesAdminResponseDto })
+  @Type(() => AvailableTimesAdminResponseDto)
+  availableTime: AvailableTimesAdminResponseDto;
 }
 
 @Exclude()

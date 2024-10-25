@@ -4,4 +4,5 @@ export enum TABLE_NAMES {
   TIME_FRAGMENTS = 'time-fragments',
   ORDERS = 'orders',
   PAYMENTS = 'payments',
+  SMSes = 'SMSes',
 }

@@ -2,10 +2,11 @@ import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { TABLE_NAMES } from '../../common/types';
 import { OrderEntity } from './order.entity';
+import { PaymentStatus } from '../../modules/payment/types/payment-status.enum';
 
 @Entity({ name: TABLE_NAMES.PAYMENTS, orderBy: { id: 'DESC' } })
 export class PaymentEntity extends BaseEntity {
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   paymentDate: Date;
 
   @Column({ nullable: false })
@@ -14,11 +15,14 @@ export class PaymentEntity extends BaseEntity {
   @Column({ nullable: true })
   refID: string; // Zarinpal reference ID
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   authority: string; // Zarinpal authority code
 
+  @Column({ nullable: false, enum: PaymentStatus })
+  status: PaymentStatus;
+
   @Column({ nullable: false })
-  status: string; // TODO: should be enum
+  url: string;
 
   @Column({ type: 'json', nullable: true })
   gatewayData: Record<string, any>;
@@ -26,4 +30,7 @@ export class PaymentEntity extends BaseEntity {
   @ManyToOne(() => OrderEntity, (order) => order.payments)
   @JoinColumn()
   order: OrderEntity;
+
+  @Column()
+  orderId: number;
 }

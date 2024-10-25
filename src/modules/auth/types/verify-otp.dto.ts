@@ -7,8 +7,8 @@ import { GetUserResponseDto } from '../../user/types';
 @Exclude()
 export class VerifyOTPRequestDto {
   @Expose()
-  @ApiProperty({ required: true, example: '+989109616770' })
-  @IsPhoneNumber()
+  @ApiProperty({ required: true, example: '09109616770' })
+  @IsPhoneNumber('IR')
   phoneNumber: string;
 
   @Expose()
@@ -22,12 +22,12 @@ export class VerifyOTPResponseDto {
   @IsString()
   @ApiProperty()
   @Expose()
-  access_token: string;
+  accessToken: string;
 
   @IsString()
   @ApiProperty()
   @Expose()
-  refresh_token: string;
+  refreshToken: string;
 
   @IsBoolean()
   @ApiProperty({ example: true })

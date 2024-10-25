@@ -22,6 +22,7 @@ import {
 } from './types';
 import { UserEntity } from '../../db/models';
 import { jwtConfig } from '../../configs';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class AuthService {
@@ -34,13 +35,14 @@ export class AuthService {
     ? [30, 60, 120, 180]
     : [5, 10, 15, 20];
 
-  private testPhones = [];
+  private testPhones = ['09109616770'];
 
   constructor(
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
     private redisService: RedisService,
     private jwtService: JwtService,
+    private smsService: SmsService,
   ) {
     this.redisClient = this.redisService.getClient();
   }
@@ -52,11 +54,11 @@ export class AuthService {
     try {
       const user = await this.userService.findOne({ where: { phoneNumber } });
       if (bcrypt.compareSync(password, user?.password)) {
-        const { access_token, refresh_token } = this.getTokens(user);
+        const { accessToken, refreshToken } = this.getTokens(user);
 
         return plainToInstance(LoginResponseDto, {
-          access_token,
-          refresh_token,
+          accessToken,
+          refreshToken,
           user,
         });
       }
@@ -66,30 +68,24 @@ export class AuthService {
     }
   }
 
-  private async setRedisKey(key: string): Promise<boolean> {
+  private async setRedisKey(key: string, otp: string): Promise<boolean> {
     const retryKey = `RETRY:${key}`;
     const retries = await this.redisClient.get(retryKey);
     let expireStep = 0;
-    if (!retries) {
-      await this.redisClient.set(retryKey, 1);
-      await this.redisClient.expire(
-        retryKey,
-        this.expireSteps[this.expireSteps.length - 1] * 3,
-      );
-    } else {
-      await this.redisClient.set(retryKey, +retries + 1);
-      await this.redisClient.expire(
-        retryKey,
-        this.expireSteps[this.expireSteps.length - 1] * 3,
-      );
+    if (retries) {
       if (+retries >= this.expireSteps.length) {
         expireStep = this.expireSteps.length - 1;
       } else {
-        expireStep = +retries;
+        expireStep = +retries + 1;
       }
     }
-    await this.redisClient.set(key, 1);
-    await this.redisClient.expire(key, this.expireSteps[expireStep]);
+    await this.redisClient.set(key, otp);
+    await this.redisClient.expire(key, this.expireSteps[expireStep] * 3);
+    await this.redisClient.set(retryKey, expireStep);
+    await this.redisClient.expire(
+      retryKey,
+      this.expireSteps[this.expireSteps.length - 1] * 10,
+    );
     return true;
   }
 
@@ -103,25 +99,28 @@ export class AuthService {
       );
     }
 
+    const otp = `${Math.floor(Math.random() * 90000) + 10000}`;
     if (
       this.isProductionEnv ||
       this.testPhones.find((testPhone) => phoneNumber === testPhone)
     ) {
-      // TODO: should actually send sms :))
+      await this.smsService.sendOtp(phoneNumber, otp);
     }
-    await this.setRedisKey(otpRedisKey);
+    await this.setRedisKey(otpRedisKey, otp);
     return {
       message: 'Otp sent successfully',
     };
   }
 
   async isValidOtp(phoneNumber: string, otp: string): Promise<boolean> {
+    const otpRedisKey = `OTP:CLIENT:${phoneNumber}`;
     let isValid = false;
     if (
       this.isProductionEnv ||
       this.testPhones.find((testPhone) => phoneNumber === testPhone)
     ) {
-      //  TODO: should actually verify the otp code :))
+      const validOtp = await this.redisClient.get(otpRedisKey);
+      isValid = validOtp == otp;
     } else {
       isValid = speakeasy.totp.verify({
         secret: process.env.GAUTH_SECRET,
@@ -131,7 +130,6 @@ export class AuthService {
     }
 
     if (isValid) {
-      const otpRedisKey = `OTP:CLIENT:${phoneNumber}`;
       await this.redisClient.del(otpRedisKey);
       await this.redisClient.del(`RETRY:${otpRedisKey}`);
     }
@@ -188,13 +186,13 @@ export class AuthService {
       id: user.id,
       role: (user as JwtPayload).role ? (user as JwtPayload).role : role,
     };
-    const [access_token, refresh_token] = [
+    const [accessToken, refreshToken] = [
       this.jwtService.sign(payload, jwtConfig.accessSignOptions),
       this.jwtService.sign(payload, jwtConfig.refreshSignOptions),
     ];
     return {
-      access_token,
-      refresh_token,
+      accessToken,
+      refreshToken,
     };
   }
 }

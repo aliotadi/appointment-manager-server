@@ -12,15 +12,12 @@ export class CreateOrderRequestDto {
   @Expose()
   @ApiProperty()
   @IsNumber()
-  start: number;
+  numberOfAdditionalParticipants: number = 0;
+}
 
+@Exclude()
+export class CreateOrderResponseDto {
   @Expose()
   @ApiProperty()
-  @IsNumber()
-  finish: number;
-
-  @Expose()
-  @ApiProperty()
-  @IsNumber()
-  numberOfAdditionalParticipants: number;
+  paymentUrl: string;
 }

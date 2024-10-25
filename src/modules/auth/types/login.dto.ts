@@ -18,11 +18,11 @@ export class LoginRequestDto {
 export class LoginResponseDto {
   @Expose()
   @ApiProperty({ nullable: false })
-  access_token: string;
+  accessToken: string;
 
   @Expose()
   @ApiProperty({ nullable: false })
-  refresh_token: string;
+  refreshToken: string;
 
   @Expose()
   @ApiProperty({ type: () => GetUserResponseDto })

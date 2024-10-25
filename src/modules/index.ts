@@ -4,3 +4,4 @@ export * from './available-time/available-time.module';
 export * from './time-fragment/time-fragment.module';
 export * from './order/order.module';
 export * from './payment/payment.module';
+export * from './sms/sms.module';

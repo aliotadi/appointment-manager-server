@@ -16,6 +16,7 @@ import { JWT_STRATEGIES, JwtPayload } from '../../../common/types';
 import { FormattedApiResponse, Payload } from '../../../common/decorators';
 import {
   CreateOrderRequestDto,
+  CreateOrderResponseDto,
   GetOrderResponseDto,
   GetOrdersResponseDto,
 } from '../types';
@@ -32,7 +33,7 @@ export class OrderController {
   async placeOrder(
     @Payload() user: JwtPayload,
     @Body() createOrderDto: CreateOrderRequestDto,
-  ) {
+  ): Promise<CreateOrderResponseDto> {
     return await this.orderService.placeOrder(user.id, createOrderDto);
   }
 

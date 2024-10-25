@@ -18,7 +18,7 @@ import { FormattedApiResponse, Roles } from '../../../common/decorators';
 import {
   ConflictingDatesResponseDto,
   CreateAvailableTimeRequestDto,
-  GetAvailableTimesResponseDto,
+  GetAvailableTimesAdminResponseDto,
   UpdateAvailableTimeRequestDto,
 } from '../types';
 import { AvailableTimeService } from '../available-time.service';
@@ -33,11 +33,11 @@ export class AvailableTimeAdminController {
   @UseGuards(AuthGuard(JWT_STRATEGIES.JWT), RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiQuery({ name: 'date' })
-  @FormattedApiResponse(GetAvailableTimesResponseDto)
+  @FormattedApiResponse(GetAvailableTimesAdminResponseDto)
   async getAvailableTimes(
     @Query('date') date: Date,
-  ): Promise<GetAvailableTimesResponseDto> {
-    return this.availableTimeService.getAvailableTimes(date);
+  ): Promise<GetAvailableTimesAdminResponseDto> {
+    return this.availableTimeService.getAvailableTimesAdmin(date);
   }
 
   @Post()

@@ -16,6 +16,7 @@ import {
   AvailableTimeModule,
   OrderModule,
   PaymentModule,
+  SmsModule,
   TimeFragmentModule,
   UserModule,
 } from './modules';
@@ -32,6 +33,7 @@ import { ResponseFormatterInterceptor } from './common/interceptors/response-for
     TimeFragmentModule,
     OrderModule,
     PaymentModule,
+    SmsModule,
   ],
   controllers: [AppController],
   providers: [

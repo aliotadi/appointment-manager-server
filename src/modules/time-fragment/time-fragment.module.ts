@@ -8,5 +8,6 @@ import { TimeFragmentService } from './time-fragment.service';
   imports: [TypeOrmModule.forFeature([TimeFragmentEntity])],
   controllers: [TimeFragmentAdminController],
   providers: [TimeFragmentService],
+  exports: [TimeFragmentService],
 })
 export class TimeFragmentModule {}

@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 import { BaseEntity } from './base.entity';
 import { TABLE_NAMES } from '../../common/types';
@@ -26,7 +33,10 @@ export class AvailableTimeEntity extends BaseEntity {
   @Column({ nullable: false })
   timeFragmentId: number;
 
-  @OneToMany(() => OrderEntity, (order) => order.availableTime)
+  @OneToOne(() => OrderEntity, (order) => order.availableTime)
   @JoinColumn()
-  orders: OrderEntity[];
+  order: OrderEntity[];
+
+  @Column({ nullable: true })
+  orderId: number;
 }

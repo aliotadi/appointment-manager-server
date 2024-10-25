@@ -2,27 +2,30 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { BaseService } from '../../common/baseClasses';
 import { AvailableTimeEntity } from '../../db/models';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Brackets, DeepPartial, Repository } from 'typeorm';
+import { Brackets, DeepPartial, Repository } from 'typeorm';
 import {
-  AvailableSessionResponseDto,
   ConflictingDatesResponseDto,
   CreateAvailableTimeRequestDto,
-  GetAvailableSessionsResponseDto,
+  GetAvailableTimesAdminResponseDto,
   GetAvailableTimesResponseDto,
   UpdateAvailableTimeRequestDto,
 } from './types';
 import { plainToInstance } from 'class-transformer';
+import { TimeFragmentService } from '../time-fragment/time-fragment.service';
 
 @Injectable()
 export class AvailableTimeService extends BaseService<AvailableTimeEntity> {
   constructor(
     @InjectRepository(AvailableTimeEntity)
     private availableTimeRepository: Repository<AvailableTimeEntity>,
+    private timeFragmentService: TimeFragmentService,
   ) {
     super(availableTimeRepository);
   }
 
-  async getAvailableTimes(date: Date): Promise<GetAvailableTimesResponseDto> {
+  async getAvailableTimesAdmin(
+    date: Date,
+  ): Promise<GetAvailableTimesAdminResponseDto> {
     const availableTimes = await this.findMany({
       where: {
         date,
@@ -30,8 +33,28 @@ export class AvailableTimeService extends BaseService<AvailableTimeEntity> {
       relations: { timeFragment: true },
     });
 
-    return plainToInstance(GetAvailableTimesResponseDto, {
+    return plainToInstance(GetAvailableTimesAdminResponseDto, {
       items: availableTimes,
+    });
+  }
+
+  async getAvailableTimes(date: Date): Promise<GetAvailableTimesResponseDto> {
+    const availableTimes = await this.findMany({
+      where: {
+        date,
+      },
+      relations: { timeFragment: true, order: true },
+      order: { start: 'ASC' },
+    });
+
+    return plainToInstance(GetAvailableTimesResponseDto, {
+      items: availableTimes.map((availableTime) => ({
+        ...availableTime,
+        price: availableTime.timeFragment.price,
+        additionalPricePerPersonPercentage:
+          availableTime.timeFragment.additionalPricePerPersonPercentage,
+        isAvailable: availableTime.order ? false : true,
+      })),
     });
   }
 
@@ -90,14 +113,34 @@ export class AvailableTimeService extends BaseService<AvailableTimeEntity> {
         },
       );
     }
-    const timesToInsert: DeepPartial<AvailableTimeEntity>[] = body.dates.map(
-      (date) => ({
-        date,
-        start: body.start,
-        finish: body.finish,
-        timeFragmentId: body.timeFragmentId,
-      }),
-    );
+    const timeFragment = await this.timeFragmentService.findOne({
+      where: { id: body.timeFragmentId },
+    });
+    if (!timeFragment) {
+      throw new HttpException(
+        'Time Fragment not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const timesToInsert: DeepPartial<AvailableTimeEntity>[] = body.dates
+      .map((date) => {
+        return this.calculateSessions(
+          body.start,
+          body.finish,
+          timeFragment.length,
+          timeFragment.rest,
+        ).map((session) => ({
+          date,
+          start: session.start,
+          finish: session.finish,
+          timeFragmentId: timeFragment.id,
+        }));
+      })
+      .reduce((prev, curr) => {
+        return [...prev, ...curr];
+      }, []);
+
     await this.insert(timesToInsert);
   }
 
@@ -160,42 +203,42 @@ export class AvailableTimeService extends BaseService<AvailableTimeEntity> {
     await this.delete(id);
   }
 
-  async getAvailableSessions(
-    date: Date,
-  ): Promise<GetAvailableSessionsResponseDto> {
-    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+  // async getAvailableSessions(
+  //   date: Date,
+  // ): Promise<GetAvailableSessionsResponseDto> {
+  //   const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+  //   const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
-    const availableTimes = await this.findMany({
-      where: { date: Between(startOfDay, endOfDay) },
-      relations: ['timeFragment'],
-    });
+  //   const availableTimes = await this.findMany({
+  //     where: { date: Between(startOfDay, endOfDay) },
+  //     relations: ['timeFragment'],
+  //   });
 
-    const sessions: AvailableSessionResponseDto[] = availableTimes
-      .map((availableTime): AvailableSessionResponseDto[] => {
-        const { timeFragment, start, finish } = availableTime;
+  //   const sessions: AvailableSessionResponseDto[] = availableTimes
+  //     .map((availableTime): AvailableSessionResponseDto[] => {
+  //       const { timeFragment, start, finish } = availableTime;
 
-        // Calculate sessions based on TimeFragment settings
-        const sessions = this.calculateSessions(
-          start,
-          finish,
-          timeFragment.length,
-          timeFragment.rest,
-        );
+  //       // Calculate sessions based on TimeFragment settings
+  //       const sessions = this.calculateSessions(
+  //         start,
+  //         finish,
+  //         timeFragment.length,
+  //         timeFragment.rest,
+  //       );
 
-        return sessions.map((session) => ({
-          date: availableTime.date,
-          start: session.start,
-          finish: session.finish,
-          price: timeFragment.price,
-        }));
-      })
-      .reduce((prev, curr) => {
-        return [...prev, ...curr];
-      }, []);
+  //       return sessions.map((session) => ({
+  //         date: availableTime.date,
+  //         start: session.start,
+  //         finish: session.finish,
+  //         price: timeFragment.price,
+  //       }));
+  //     })
+  //     .reduce((prev, curr) => {
+  //       return [...prev, ...curr];
+  //     }, []);
 
-    return { sessions };
-  }
+  //   return { sessions };
+  // }
 
   private calculateSessions(
     start: number,
